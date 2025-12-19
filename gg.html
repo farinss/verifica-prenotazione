@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Portale Verifica Prenotazioni</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(120deg, #1e3c72, #2a5298);
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #333;
+    }
+
+    .card {
+        background: white;
+        width: 380px;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        text-align: center;
+    }
+
+    .logo {
+        font-size: 22px;
+        font-weight: bold;
+        color: #2a5298;
+        margin-bottom: 5px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 90%;
+        padding: 10px;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px 25px;
+        background: #2a5298;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    button:hover {
+        background: #1e3c72;
+    }
+
+    .loader {
+        margin-top: 20px;
+        display: none;
+    }
+
+    .progress {
+        width: 100%;
+        background: #ddd;
+        height: 8px;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #2a5298;
+        transition: width 0.4s;
+    }
+
+    .result {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+
+    .error {
+        color: #c0392b;
+    }
+
+    .ok {
+        color: #27ae60;
+    }
+
+    .small {
+        font-size: 12px;
+        color: #777;
+        margin-top: 10px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="logo">SkyBalkan Airways</div>
+    <div class="subtitle">Sistema automatico di verifica prenotazioni</div>
+
+    <div id="form">
+        <p>Inserisci il codice prenotazione</p>
+        <input type="text" id="code" placeholder="Es. SB-9F2A7">
+        <br>
+        <button onclick="avviaVerifica()">Verifica</button>
+    </div>
+
+    <div class="loader" id="loader">
+        <p>Verifica in corso...</p>
+        <div class="progress">
+            <div class="progress-bar" id="bar"></div>
+        </div>
+        <div class="small">Controllo disponibilità posti e assegnazione gruppo</div>
+    </div>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+function avviaVerifica() {
+    const codice = document.getElementById("code").value.trim();
+    if (codice === "") return;
+
+    document.getElementById("form").style.display = "none";
+    document.getElementById("loader").style.display = "block";
+
+    let progress = 0;
+    const bar = document.getElementById("bar");
+
+    const interval = setInterval(() => {
+        progress += Math.floor(Math.random() * 15) + 5;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            setTimeout(() => mostraRisultato(codice), 600);
+        }
+        bar.style.width = progress + "%";
+    }, 500);
+}
+
+function mostraRisultato(codiceInserito) {
+    const codiceBloccato = "A5FT68D3"; // 👈 CODICE TRAPPOLA
+
+    document.getElementById("loader").style.display = "none";
+    const result = document.getElementById("result");
+
+    if (codiceInserito === codiceBloccato) {
+        result.innerHTML = `
+            <div class="error">
+                ⚠️ ESITO VERIFICA NEGATIVO<br><br>
+                La prenotazione risulta esclusa dal volo di gruppo.<br>
+                <br>
+                <b>Motivo:</b> annullamento posto per riorganizzazione operativa.<br><br>
+                Il passeggero NON potrà imbarcarsi con il gruppo previsto.
+            </div>
+            <div class="small">
+                Codice errore: SBK-417
+            </div>
+        `;
+    } else {
+        result.innerHTML = `
+            <div class="ok">
+                ✅ VERIFICA COMPLETATA<br><br>
+                Prenotazione confermata.<br>
+                Il passeggero è regolarmente incluso<br>
+                nel volo di gruppo per Bucarest.
+            </div>
+            <div class="small">
+                Stato: OK – Nessuna modifica rilevata
+            </div>
+        `;
+    }
+}
+</script>
+
+</body>
+</html>
